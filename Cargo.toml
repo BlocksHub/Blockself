@@ -1,6 +1,30 @@
 [package]
 name = "blockself"
+description = "A perfect wrapper for TurboSelf API"
+readme = "README.md"
+license = "MIT"
+keywords = ["turboself", "wrapper", "school"]
+categories = ["api-bindings", "web-programming::http-client", "asynchronous"]
 version = "0.1.0"
 edition = "2024"
+repository = "https://github.com/BlocksHub/Blockself"
 
 [dependencies]
+url = "2.5.8"
+
+[lints.clippy]
+cargo = { level = "warn", priority = -1 }
+multiple_crate_versions = "allow"
+
+error_impl_error           = "warn"
+dbg_macro                  = "warn"
+print_stderr               = "warn"
+print_stdout               = "warn"
+str_to_string              = "warn"
+mem_forget                 = "warn"
+unwrap_used                = "warn"
+expect_used                = "warn"
+panic                      = "warn"
+todo                       = "warn"
+unimplemented              = "warn"
+undocumented_unsafe_blocks = "warn"
