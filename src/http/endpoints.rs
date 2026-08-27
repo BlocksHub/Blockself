@@ -4,12 +4,14 @@ use crate::{constants::BASE_URL, http::errors::HttpError};
 
 pub enum Endpoint {
     Login,
+    Host(u32),
 }
 
 impl Endpoint {
-    pub fn path(&self) -> &str {
+    pub fn path(&self) -> String {
         match self {
-            Self::Login => "v1/auth/login",
+            Self::Login => format!("v1/auth/login"),
+            Self::Host(id) => format!("v1/hotes/{}", id),
         }
     }
 
@@ -18,6 +20,8 @@ impl Endpoint {
     }
 
     pub fn url(&self) -> Result<Url, HttpError> {
-        BASE_URL.join(self.path()).map_err(HttpError::UrlParsing)
+        BASE_URL
+            .join(self.path().as_str())
+            .map_err(HttpError::UrlParsing)
     }
 }
