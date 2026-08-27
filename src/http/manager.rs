@@ -63,6 +63,16 @@ impl HttpManager {
         Self::send::<K>(request).await
     }
 
+    pub(crate) async fn get<K: DeserializeOwned>(&self, endpoint: Endpoint) -> Result<K, HttpError> {
+                let token = if endpoint.require_auth() {
+            Some(self.access_token()?)
+        } else {
+            None
+        };
+        let request = Self::build_request(&self.transport, reqwest::Method::GET, endpoint, token, None::<()>)?;
+        Self::send::<K>(request).await
+    }
+
     async fn send<K>(request: reqwest::RequestBuilder) -> Result<K, HttpError>
     where
         K: DeserializeOwned,
