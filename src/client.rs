@@ -1,13 +1,13 @@
 use std::sync::Arc;
 
 use crate::{
-    http::{endpoints::Endpoint, errors::HttpError, manager::HttpManager},
-    models::credentials::{Credential, LoginResponse},
+    http::{endpoints::Endpoint, errors::HttpError, manager::HttpManager}, models::{credentials::{Credential, LoginResponse}, host::Host},
 };
 
 #[derive(uniffi::Object)]
 pub struct Client {
     pub(crate) http: HttpManager,
+    pub host: Host,
     pub host_id: u32,
     pub user_id: u32,
 }
@@ -25,10 +25,14 @@ impl Client {
         let login: LoginResponse =
             HttpManager::post_anonymous(&transport, Endpoint::Login, Some(credentials)).await?;
 
+        let http = HttpManager::from_token(transport, login.access_token);
+        let host: Host = http.get(Endpoint::Host(login.host_id)).await?;
+
         Ok(Arc::new(Self {
             host_id: login.host_id,
             user_id: login.user_id,
-            http: HttpManager::from_token(transport, login.access_token),
+            host,
+            http,
         }))
     }
 }
