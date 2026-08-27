@@ -60,12 +60,11 @@ impl HttpManager {
     {
         let request =
             Self::build_request(transport, reqwest::Method::POST, endpoint, None, payload)?;
-        Self::send::<T, K>(request).await
+        Self::send::<K>(request).await
     }
 
-    async fn send<T, K>(request: reqwest::RequestBuilder) -> Result<K, HttpError>
+    async fn send<K>(request: reqwest::RequestBuilder) -> Result<K, HttpError>
     where
-        T: Serialize,
         K: DeserializeOwned,
     {
         request
