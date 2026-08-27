@@ -81,4 +81,3 @@ pub struct Permissions {
     #[serde(rename = "nbMulti")]
     pub max_passages: u8,
 }
-

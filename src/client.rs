@@ -1,7 +1,11 @@
 use std::sync::Arc;
 
 use crate::{
-    http::{endpoints::Endpoint, errors::HttpError, manager::HttpManager}, models::{credentials::{Credential, LoginResponse}, host::Host},
+    http::{endpoints::Endpoint, errors::HttpError, manager::HttpManager},
+    models::{
+        credentials::{Credential, LoginResponse},
+        host::Host,
+    },
 };
 
 #[derive(uniffi::Object)]

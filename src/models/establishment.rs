@@ -11,9 +11,9 @@ pub struct Closure {
     #[serde(rename = "paiement")]
     pub can_pay: bool,
     #[serde(rename = "du", deserialize_with = "rfc3339_to_system_time")]
-    pub from:SystemTime,
+    pub from: SystemTime,
     #[serde(rename = "au", deserialize_with = "rfc3339_to_system_time")]
-    pub to: SystemTime
+    pub to: SystemTime,
 }
 
 fn rfc3339_to_system_time<'de, D: Deserializer<'de>>(d: D) -> Result<SystemTime, D::Error> {
@@ -33,7 +33,7 @@ pub struct Configuration {
     #[serde(rename = "cacherHistorique")]
     pub hide_history: bool,
     #[serde(rename = "fermetures")]
-    pub closures: Vec<Closure>
+    pub closures: Vec<Closure>,
 }
 
 #[derive(Deserialize, uniffi::Record)]
