@@ -2,11 +2,11 @@ use url::Url;
 
 use crate::{constants::BASE_URL, http::errors::HttpError};
 
-pub enum Endpoints {
+pub enum Endpoint {
     Login,
 }
 
-impl Endpoints {
+impl Endpoint {
     pub fn path(&self) -> &str {
         match self {
             Self::Login => "v1/auth/login",
