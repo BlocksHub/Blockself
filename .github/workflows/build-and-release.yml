@@ -81,6 +81,7 @@ jobs:
   build-ios:
     name: Build for iOS
     runs-on: macos-latest
+    needs: build-android
     permissions:
       contents: write
     steps:
