@@ -11,7 +11,6 @@ use crate::{
 #[derive(uniffi::Object)]
 pub struct Client {
     pub(crate) http: HttpManager,
-    pub host: Host,
     pub host_id: u32,
     pub user_id: u32,
 }
@@ -30,13 +29,23 @@ impl Client {
             HttpManager::post_anonymous(&transport, Endpoint::Login, Some(credentials)).await?;
 
         let http = HttpManager::from_token(transport, login.access_token);
-        let host: Host = http.get(Endpoint::Host(login.host_id)).await?;
 
         Ok(Arc::new(Self {
             host_id: login.host_id,
             user_id: login.user_id,
-            host,
             http,
         }))
+    }
+
+    pub async fn host(&self) -> Result<Host, HttpError> {
+        self.http.get(Endpoint::Host(self.host_id)).await
+    }
+
+    pub fn host_id(&self) -> u32 {
+        self.host_id
+    }
+
+    pub fn user_id(&self) -> u32 {
+        self.user_id
     }
 }
