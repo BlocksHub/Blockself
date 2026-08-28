@@ -13,6 +13,7 @@ jobs:
     name: Build for Android
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       packages: write
     steps:
       - name: Checkout
