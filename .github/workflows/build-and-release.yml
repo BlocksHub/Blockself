@@ -9,8 +9,77 @@ env:
   IPHONEOS_DEPLOYMENT_TARGET: 13.0
 
 jobs:
+  build-android:
+    name: Build for Android
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android,armv7-linux-androideabi,x86_64-linux-android
+
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: build-android
+
+      - name: Install cargo-ndk
+        run: cargo install cargo-ndk
+      
+      - name: Setup NDK
+        uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r26d
+
+      - name: Setup Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 17
+      - run: java --version
+
+      - name: Build Shared Libraries
+        env:
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+        run: |
+          cargo ndk \
+            -t arm64-v8a -t armeabi-v7a -t x86_64 \
+            -o android-package/lib/src/main/jniLibs \
+            build --release
+      
+      - name: Generate Kotlin Bindings
+        run: |
+          cargo run --features cli --bin uniffi-bindgen -- generate \
+            --library target/aarch64-linux-android/release/lib${{ env.LIB_NAME }}.so \
+            --language kotlin \
+            --out-dir android-package/lib/src/main/kotlin
+      
+      - name: Build AAR
+        run: |
+          cd android-package
+          ./gradlew :lib:assembleRelease -Pversion=${GITHUB_REF_NAME#v}
+
+      - name: Publish to Maven
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd android-package
+          ./gradlew :lib:publish -Pversion=${GITHUB_REF_NAME#v}
+      - name: Upload AAR Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-aar
+          path: android-package/lib/build/outputs/aar/*.aar
   build-ios:
-    name: Build on iOS
+    name: Build for iOS
     runs-on: macos-latest
     permissions:
       contents: write
@@ -64,12 +133,20 @@ jobs:
             -e "s|url: \".*\"|url: \"${URL}\"|" \
             -e "s|checksum: \".*\"|checksum: \"${CHECKSUM}\"|" \
             swift-package/Package.swift
+      
+      - name: Download Android AAR
+        uses: actions/download-artifact@v4
+        with:
+          name: android-aar
+          path: .
 
       - name: Create GitHub Release
         if: ${{ !env.ACT && startsWith(github.ref, 'refs/tags/') }}
         uses: softprops/action-gh-release@v2
         with:
-          files: ${{ env.CRATE_NAME }}FFI.xcframework.zip
+          files: |
+            ${{ env.CRATE_NAME }}FFI.xcframework.zip
+            *.aar
           generate_release_notes: true
           
       - name: Publish SPM Tag

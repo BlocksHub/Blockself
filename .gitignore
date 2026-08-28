@@ -3,3 +3,22 @@
 # UniFFi Binding to Swift/Kotlin
 /bindings
 *.xcframework
+
+# Swift Package Manager
+/swift/Sources
+.build/
+.DS_Store
+
+# Gradle
+**/build/
+.gradle/
+local.properties
+
+# CI
+.tmp/
+android-package/lib/src/main/jniLibs/
+android-package/lib/src/main/kotlin/
+swift-package/Sources/
+*.xcframework
+*.xcframework.zip
+*.aar
