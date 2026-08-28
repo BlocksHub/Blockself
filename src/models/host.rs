@@ -4,7 +4,7 @@ use serde::Deserialize;
 
 use crate::models::establishment::Establishment;
 
-#[derive(Deserialize, uniffi::Enum)]
+#[derive(Clone, Deserialize, uniffi::Enum)]
 pub enum Mode {
     #[serde(rename = "Argent")]
     Cash,
@@ -12,7 +12,7 @@ pub enum Mode {
     Plan,
 }
 
-#[derive(Deserialize, uniffi::Enum)]
+#[derive(Clone, Deserialize, uniffi::Enum)]
 #[serde(try_from = "u8")]
 pub enum AccountType {
     Student,
@@ -41,7 +41,7 @@ impl fmt::Display for UnknownAccountType {
     }
 }
 
-#[derive(Deserialize, uniffi::Record)]
+#[derive(Clone, Deserialize, uniffi::Record)]
 pub struct Host {
     pub id: u32,
     #[serde(rename = "idOrig")]
@@ -68,7 +68,7 @@ pub struct Host {
     pub permissions: Permissions,
 }
 
-#[derive(Deserialize, uniffi::Record)]
+#[derive(Clone, Deserialize, uniffi::Record)]
 pub struct Permissions {
     #[serde(rename = "droitPaiement")]
     pub payment: bool,
@@ -79,5 +79,5 @@ pub struct Permissions {
     #[serde(rename = "autoriseReservSoldeIns")]
     pub book_with_negative_balance: bool,
     #[serde(rename = "nbMulti")]
-    pub max_passages: u8,
+    pub max_passages: Option<u8>,
 }

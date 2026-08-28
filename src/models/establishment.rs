@@ -3,7 +3,7 @@ use std::time::SystemTime;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Deserializer};
 
-#[derive(Deserialize, uniffi::Record)]
+#[derive(Clone, Deserialize, uniffi::Record)]
 pub struct Closure {
     pub id: u32,
     #[serde(rename = "rsv")]
@@ -21,22 +21,22 @@ fn rfc3339_to_system_time<'de, D: Deserializer<'de>>(d: D) -> Result<SystemTime,
     Ok(dt.into())
 }
 
-#[derive(Deserialize, uniffi::Record)]
+#[derive(Clone, Deserialize, uniffi::Record)]
 pub struct Configuration {
     #[serde(rename = "url")]
     pub website: String,
     pub email: String,
     #[serde(rename = "nbRepasMini")]
-    pub minimum_meal_to_pay: u8,
+    pub minimum_meal_to_pay: Option<u8>,
     #[serde(rename = "msgAccueil")]
-    pub motd: String,
+    pub motd: Option<String>,
     #[serde(rename = "cacherHistorique")]
     pub hide_history: bool,
     #[serde(rename = "fermetures")]
     pub closures: Vec<Closure>,
 }
 
-#[derive(Deserialize, uniffi::Record)]
+#[derive(Clone, Deserialize, uniffi::Record)]
 pub struct Establishment {
     #[serde(rename = "nom")]
     pub name: String,
