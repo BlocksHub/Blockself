@@ -1,5 +1,6 @@
 [bindings.kotlin]
 package_name = "fr.blockshub.blockself"
+android = true
 
 [bindings.swift]
 module_name = "Blockself"

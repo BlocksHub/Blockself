@@ -2,6 +2,7 @@ name: Build and Release
 on:
   push:
     tags: ["v*"]
+  workflow_dispatch:
 
 env:
   CRATE_NAME: Blockself
@@ -129,7 +130,7 @@ jobs:
           cp *.md swift-package/ 2>/dev/null || true
           mkdir -p swift-package/Sources/${{ env.CRATE_NAME }}
           mv .tmp/bindings/*.swift swift-package/Sources/${{ env.CRATE_NAME }}/
-          CHECKSUM=$(swift package compute-checksum ${{ env.CRATE_NAME }}FFI.xcframework.zip)
+          CHECKSUM=$(shasum -a 256 ${{ env.CRATE_NAME }}FFI.xcframework.zip | cut -d' ' -f1)
           URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${GITHUB_REF_NAME}/${{ env.CRATE_NAME }}FFI.xcframework.zip"
           sed -i '' \
             -e "s|url: \".*\"|url: \"${URL}\"|" \

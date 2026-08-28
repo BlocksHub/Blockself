@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.blockshub.blockself"
+    namespace = "fr.blockshub.blockself"
     compileSdk = 34
     defaultConfig { minSdk = 24 }
 
@@ -18,4 +18,33 @@ android {
     }
 
     publishing { singleVariant("release") }
+}
+
+dependencies {
+    implementation("net.java.dev.jna:jna:5.14.0@aar")
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
+    implementation("androidx.annotation:annotation:1.8.0")
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("release") {
+                from(components["release"])
+                groupId = "fr.blockshub"
+                artifactId = "blockself"
+                version = project.version.toString()
+            }
+        }
+        repositories {
+            maven {
+                name = "GitHubPackages"
+                url = uri("https://maven.pkg.github.com/BlocksHub/Blockself")
+                credentials {
+                    username = System.getenv("GITHUB_ACTOR")
+                    password = System.getenv("GITHUB_TOKEN")
+                }
+            }
+        }
+    }
 }

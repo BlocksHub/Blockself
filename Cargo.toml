@@ -18,10 +18,6 @@ name = "uniffi-bindgen"
 path = "uniffi-bindgen.rs"
 required-features = ["cli"]
 
-[bindings.kotlin]
-package_name = "com.blockshub.blockself"
-android = true
-
 [features]
 cli = ["uniffi/cli"]
 
